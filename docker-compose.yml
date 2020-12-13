@@ -1,0 +1,49 @@
+version: '3.1'
+
+services:
+
+  challenge-02-nginx:
+    image: nginx:1.19.5-alpine
+    container_name: challenge-02-nginx
+    build: .
+    ports:
+      - "8080:80"
+    networks:
+      - node-network
+    depends_on:
+      - challenge-02-node-app
+
+  challenge-02-node-app:
+    build: 
+      context: ./node-app
+    container_name: challenge-02-node-app
+    volumes:
+      - ./node-app:/usr/src/app
+    tty: true  
+    ports:
+      - "3000:3000"
+    networks:
+      - node-network
+    depends_on:
+      - challenge-02-db
+
+  challenge-02-db:
+    build: 
+      context: ./db
+    command: --innodb-use-native-aio=0
+    container_name: challenge-02-db
+    restart: always
+    tty: true
+    volumes:
+      - ../mysql-db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: node-db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+    networks:
+      - node-network
+networks:
+  node-network:
+    driver: bridge
