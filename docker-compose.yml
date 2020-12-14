@@ -17,8 +17,6 @@ services:
     build: 
       context: ./node-app
     container_name: challenge-02-node-app
-    volumes:
-      - ./node-app:/usr/src/app
     tty: true  
     ports:
       - "3000:3000"
